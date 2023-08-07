@@ -1,11 +1,13 @@
 package handler
 
 import (
+	"fmt"
 	"goaplication/helper"
 	"goaplication/user"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type userHandler struct {
@@ -110,4 +112,45 @@ func (h *userHandler) CheckEmailAvailability(c *gin.Context) {
 
 	response := helper.APIResponse(metaMessage, http.StatusOK, "error", data) 
 	c.JSON(http.StatusUnprocessableEntity, response)
+}
+
+func (h *userHandler) UploadAvatar(c *gin.Context) {
+	file, err := c.FormFile("avatar")
+	if err != nil {
+		data:= gin.H{"is_uploaded":false}
+		response := helper.APIResponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
+		
+		c.JSON(http.StatusBadRequest, response)
+		return 
+	}
+
+	uuidStr := "2a6db32a-9294-474d-9f41-1e907e69e985"
+	UserID, err := uuid.Parse(uuidStr)
+	if err != nil {
+		// Handle error
+	}
+
+	path := fmt.Sprintf("images/%s-%s", UserID, file.Filename)
+
+	err = c.SaveUploadedFile(file, path)
+	if err != nil {
+		data := gin.H{"is_uploaded": false}
+		response := helper.APIResponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
+
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	_, err = h.userService.SaveAvatar(UserID, path)
+	if err != nil {
+		data := gin.H{"is_uploaded": false}
+		response := helper.APIResponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
+
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+		data := gin.H{"is_uploaded": true}
+		response := helper.APIResponse("Avatar successfuly uploaded", http.StatusOK, "success", data)
+
+		c.JSON(http.StatusOK, response)
 }
