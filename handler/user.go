@@ -152,8 +152,9 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 		return 
 	}
 
-	uuidStr := "2a6db32a-9294-474d-9f41-1e907e69e985"
-	UserID, err := uuid.Parse(uuidStr)
+	currentUser := c.MustGet("currentUser").(user.User)
+	idUserTmp := currentUser.ID
+	UserID, err := uuid.Parse(idUserTmp)
 	if err != nil {
 		// Handle error
 	}
