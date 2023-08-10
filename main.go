@@ -45,7 +45,7 @@ func authMiddleware(authService auth.Service, userService user.Service) gin.Hand
 		return func (c *gin.Context) {
 			authHeader := c.GetHeader("Authorization")
 
-			if !strings.Contains(authHeader, "Bearer ") {
+			if !strings.Contains(authHeader, "Bearer") {
 				response := helper.APIResponse("Unauthorized", http.StatusUnauthorized, "error", nil)
 				c.AbortWithStatusJSON(http.StatusUnauthorized, response)
 				return
