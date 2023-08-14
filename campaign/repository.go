@@ -1,13 +1,12 @@
 package campaign
 
 import (
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Repository interface {
 	FindAll() ([]Campaign, error)
-	FindByUserID(userID uuid.UUID) ([]Campaign, error)
+	FindByUserID(userID string) ([]Campaign, error)
 }
 
 type repository struct {
@@ -28,7 +27,7 @@ func (r *repository) FindAll() ([]Campaign, error) {
 	return campaigns, nil
 }
 
-func (r *repository) FindByUserID(userID uuid.UUID) ([]Campaign, error) {
+func (r *repository) FindByUserID(userID string) ([]Campaign, error) {
 	var campaigns []Campaign
 
 	err := r.db.Where("user_id = ?", userID).Preload("CampaignImages","campaign_images.is_primary = 1").Find(&campaigns).Error

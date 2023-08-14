@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"goaplication/auth"
 	"goaplication/campaign"
 	"goaplication/handler"
@@ -27,40 +26,13 @@ func main() {
 
 	userRepository := user.NewRepository(db)
 	campaignRepository := campaign.NewRepository(db)
-// 2a6db32a-9294-474d-9f41-1e907e69e985
-// 7b5f26c8-3743-400d-b7fd-d8e6573843cf
-
-	campaigns, err := campaignRepository.FindAll()
-	fmt.Println("=========")
-	fmt.Println("=========")
-	fmt.Println("=========")
-	fmt.Println(len(campaigns))
-	for _, campaign := range campaigns {
-		fmt.Println(campaign.Name)
-	}
-
-	uuidStr := "2a6db32a-9294-474d-9f41-1e907e69e985"
-	uuidValue, err := uuid.Parse(uuidStr)
-	if err != nil {
-		// Handle error
-	}
-
-	campaignsById, err := campaignRepository.FindByUserID(uuidValue)
-	fmt.Println("=========")
-	fmt.Println("=========")
-	fmt.Println("=========")
-	fmt.Println(len(campaignsById))
-	for _, campaignId := range campaignsById {
-		fmt.Println(campaignId.Description)
-		if len(campaignId.CampaignImages) > 0 {
-			fmt.Println(campaignId.CampaignImages[0].FileName)
-		}
-	}
-
+	
 	userService := user.NewService(userRepository)
 	authService := auth.NewService()
+	campaignService := campaign.NewService(campaignRepository)
 
 	userHandler := handler.NewUserHandler(userService, authService)
+	campaignHandler:= handler.NewCampaignHandler(campaignService)
 
 	router := gin.Default()
 
@@ -70,6 +42,8 @@ func main() {
 	api.POST("/sessions", userHandler.Login)
 	api.POST("/email_checkers", userHandler.CheckEmailAvailability)
 	api.POST("/avatars", authMiddleware(authService, userService) ,userHandler.UploadAvatar)
+
+	api.GET("/campaigns", campaignHandler.GetCampaigns)
 
 	router.Run()
 }
