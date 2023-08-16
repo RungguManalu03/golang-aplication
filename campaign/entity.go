@@ -1,6 +1,7 @@
 package campaign
 
 import (
+	"goaplication/user"
 	"time"
 
 	"github.com/google/uuid"
@@ -9,7 +10,7 @@ import (
 
 type Campaign struct {
 	ID 					string `json:"id" gorm:"unique;default:gen_random_uuid()"`
-	UserID 				uuid.UUID 
+	UserID 				string
 	Name 				string
 	ShortDescription 	string
 	Description 		string
@@ -21,6 +22,7 @@ type Campaign struct {
 	CreatedAt			time.Time
 	UpdatedAt			time.Time
 	CampaignImages		[]CampaignImages
+	User				user.User
 }
 type CampaignImages struct {
 	ID 					string `json:"id" gorm:"unique;default:gen_random_uuid()"`
