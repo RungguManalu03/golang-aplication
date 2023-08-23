@@ -109,7 +109,7 @@ func FormatCampaignDetail(campaign Campaign) CampaignDetailFormatter {
 
 		images = append(images, campaignImageFormatter)
 	}
-	campaignDetailFormatter.Images =images
+	campaignDetailFormatter.Images = images	
 
 	return campaignDetailFormatter
 }

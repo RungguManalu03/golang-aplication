@@ -8,6 +8,10 @@ type Repository interface {
 	FindAll() ([]Campaign, error)
 	FindByUserID(userID string) ([]Campaign, error)
 	FindByID(ID string) (Campaign, error)
+	Save(campaign Campaign) (Campaign, error)
+	Update(campaign Campaign) (Campaign, error)	
+	CreateImage(campaignImage CampaignImages) (CampaignImages, error)
+	MarkAllImagesNonPrimary(campaignID string) (bool, error)
 }
 
 type repository struct {
@@ -49,3 +53,37 @@ func (r *repository) FindByID(ID string) (Campaign, error) {
 	return campaign, nil
 }
 
+func (r * repository) Save(campaign Campaign) (Campaign, error) {
+	err := r.db.Create(&campaign).Error
+	if err != nil {
+		return campaign, err
+	}
+	return campaign, nil
+}
+
+func (r *repository) Update(campaign Campaign) (Campaign, error) {
+	err := r.db.Save(&campaign).Error
+
+	if err != nil {
+		return campaign, err
+	}
+
+	return campaign, nil
+}
+
+func (r *repository) CreateImage(campaignImage CampaignImages) (CampaignImages, error) {
+	err := r.db.Create(&campaignImage).Error
+	if err != nil {
+		return campaignImage, err
+	}
+	return campaignImage, nil
+}
+
+func (r * repository) MarkAllImagesNonPrimary(campaignID string) (bool, error) {
+	err := r.db.Model(&CampaignImages{}).Where("campaign_id = ?", campaignID).Update("is_primary", 0).Error
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}

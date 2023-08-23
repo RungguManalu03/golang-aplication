@@ -3,7 +3,6 @@ package user
 import (
 	"errors"
 
-	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -11,8 +10,8 @@ type Service interface {
 	RegisterUser(input RegisterUserInput) (User, error)
 	Login(input LoginInput) (User, error)
 	IsEmailAvailable(input CheckEmailInput) (bool, error)
-	SaveAvatar(ID uuid.UUID, fileLocation string)  (User, error)
-	GetUserByID(ID uuid.UUID) (User, error)
+	SaveAvatar(ID string, fileLocation string)  (User, error)
+	GetUserByID(string) (User, error)
 }
 
 type service struct {
@@ -78,7 +77,7 @@ func (s *service) IsEmailAvailable(input CheckEmailInput) (bool, error) {
 	return false, nil
 }
 
-func (s *service) SaveAvatar(ID uuid.UUID, fileLocation string) (User, error) {
+func (s *service) SaveAvatar(ID string, fileLocation string) (User, error) {
 	user, err := s.repository.FindByID(ID)
 	if err != nil {
 		return user, err
@@ -94,7 +93,7 @@ func (s *service) SaveAvatar(ID uuid.UUID, fileLocation string) (User, error) {
 	return updateUser, nil
 }
 
-func (s *service) GetUserByID(ID uuid.UUID) (User, error) {
+func (s *service) GetUserByID(ID string) (User, error) {
 	user, err := s.repository.FindByID(ID)
 	if err != nil {
 		return user, err

@@ -9,6 +9,7 @@ import (
 )
 
 type Campaign struct {
+
 	ID 					string `json:"id" gorm:"unique;default:gen_random_uuid()"`
 	UserID 				string
 	Name 				string
@@ -24,16 +25,22 @@ type Campaign struct {
 	CampaignImages		[]CampaignImages
 	User				user.User
 }
+
+func (campaign *Campaign) BeforeCreate(tx *gorm.DB) (err error) {
+    campaign.ID = uuid.New().String()
+    return
+}
+
 type CampaignImages struct {
 	ID 					string `json:"id" gorm:"unique;default:gen_random_uuid()"`
-	CampaignID 			uuid.UUID 
+	CampaignID 			string
 	FileName 			string
 	IsPrimary			int
 	CreatedAt			time.Time
 	UpdatedAt			time.Time
 }
 
-func (u *Campaign) BeforeCreateCampaign(tx *gorm.DB) (err error) {
-	u.ID = uuid.New().String()
-	return
+func (campaignImages *CampaignImages) BeforeCreate(tx *gorm.DB) (err error) {
+    campaignImages.ID = uuid.New().String()
+    return
 }

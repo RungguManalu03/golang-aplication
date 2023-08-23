@@ -12,7 +12,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -47,6 +46,9 @@ func main() {
 
 	api.GET("/campaigns", campaignHandler.GetCampaigns)
 	api.GET("/campaign/:id", campaignHandler.GetCampaign)
+	api.POST("/campaigns", authMiddleware(authService, userService), campaignHandler.CreateCampaign)
+	api.PUT("/campaigns/:id", authMiddleware(authService, userService), campaignHandler.UpdateCampaign)
+	api.POST("/campaign-images", authMiddleware(authService, userService), campaignHandler.UploadImage)
 
 	router.Run()
 }
@@ -87,12 +89,8 @@ func authMiddleware(authService auth.Service, userService user.Service) gin.Hand
 				// Penanganan kesalahan jika asersi tipe gagal
 			}
 
-			userID, err := uuid.Parse(userIDStr)
-			if err != nil {
-				// Penanganan kesalahan jika parsing UUID gagal
-			}
 
-			user, err := userService.GetUserByID(userID)
+			user, err := userService.GetUserByID(userIDStr)
 			if err != nil {
 				response := helper.APIResponse("Unauthorized", http.StatusUnauthorized, "error", nil)
 				c.AbortWithStatusJSON(http.StatusUnauthorized, response)
