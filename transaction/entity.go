@@ -1,6 +1,8 @@
 package transaction
 
 import (
+	"goaplication/campaign"
+	"goaplication/user"
 	"time"
 
 	"github.com/google/uuid"
@@ -14,6 +16,8 @@ type Transaction struct {
 	Amount 				int
 	Status 				string
 	Code 				string
+	User 				user.User
+	Campaign 			campaign.Campaign
 	CreatedAt			time.Time
 	UpdatedAt			time.Time
 }
