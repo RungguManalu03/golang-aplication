@@ -9,6 +9,8 @@ type repository struct {
 type Repository interface {
 	GetByCampaignID(campaignID string) ([]Transaction, error)
 	GetByUserID(userID string) ([]Transaction, error)
+	Save(transaction Transaction) (Transaction, error)
+	Update(transaction Transaction) (Transaction, error)	
 }
 
 func NewRepository(db *gorm.DB) *repository {
@@ -35,4 +37,25 @@ func (r *repository) GetByUserID(userID string) ([]Transaction, error) {
 	}
 
 	return transactions, nil
+}
+
+func (s *repository) Save(transaction Transaction) (Transaction, error) {
+	err := s.db.Create(&transaction).Error
+
+	if err != nil {
+		return transaction, err
+	}
+
+	return transaction, nil
+}
+
+
+func (r *repository) Update(transaction Transaction) (Transaction, error) {
+	err := r.db.Save(&transaction).Error
+
+	if err != nil {
+		return transaction, err
+	}
+
+	return transaction, nil
 }
